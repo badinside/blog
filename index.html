@@ -9,7 +9,7 @@
   <meta name="author" content="BadInside">
 
   
-  <meta name="description" content="Руддщ ророро
+  <meta name="description" content="ророро
 ">
   
 
@@ -94,206 +94,9 @@
   </header>
 
 
-  <div class="entry-content"><h2>Руддщ</h2>
-
-<h1>ророро</h1>
+  <div class="entry-content"><h1>ророро</h1>
 </div>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2011/12/28/how-to-java-pkcs12/">How-to Java PKCS#12</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-28T20:58:00+04:00" pubdate data-updated="true">Dec 28<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div class='post'>
-<div dir="ltr" style="text-align: left;" trbidi="on"><div style="text-align: left;"><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-92I79O705lo/Tvtz7lIF7TI/AAAAAAAAAJI/qmCVkTSlJ0U/s1600/java_cryptography_pkcs.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em; padding-right: 1em;"><img border="0" height="200" src="http://2.bp.blogspot.com/-92I79O705lo/Tvtz7lIF7TI/AAAAAAAAAJI/qmCVkTSlJ0U/s200/java_cryptography_pkcs.png" width="200" /></a></div>Я новичок в криптографии. С ней практически не сталкивался. Казалось бы простой вопрос: подписать сообщение сертификатом, а пришлось убить несколько дней на переваривание кучи разрозненных источников, генерации разного рода ключей и хранилищь, что бы в &nbsp;итоге получить простенький класс, который смог бы принять некие данные, в моем случае строку, и подписав их отдать строку в base64.<br /><br />Забегая вперед, могу сказать что &nbsp;наиболее понятные примеры можно найти в исходных примерах библиотеки BouncyCastle.<br /><br /><br /><br /></div><div style="text-align: left;"><b>Постановка задачи:</b></div><div style="text-align: left;"></div><ul style="text-align: left;"><li>Необходимо сформировать крипто пакет согласно стандарту.</li><li>Пакет должен быть подписан выданным сертификатом.</li><li>Пакет не должен быть зашифрован</li><li>Пакет без компресии</li><li>Поместить в пакет xml сообщение.</li></ul><b>Исходные:</b><br /><div style="text-align: left;"></div><div style="text-align: left;"><ul style="text-align: left;"><li>Программа должна быть на Java</li><li>Сертификат</li><li>Приватный ключ</li></ul><a name='more'></a><br /><b>Решение:</b></div><div style="text-align: left;"><br /></div><div style="text-align: left;">1) &nbsp;Собираем ключ &nbsp;и сертификат в единый контейнер. Для этого у нас должен стоять <a href="http://www.openssl.org/" target="_blank">OpenSSL</a></div><div style="text-align: left;"><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;"><br /></span></div><div style="text-align: left;"><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;"><i>openssl pkcs12 -export -in mycert.cer -name &#8220;certrust&#8221; -inkey private.key -out packet.p12</i></span></div><div style="text-align: left;"><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;"><br /></span></div><div style="text-align: left;"><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;">На выходе получаем packet.p12 файл в которой мы положили приватный ключ, и сертификат добавив для него алиас &#8220;certrust&#8221;, для упрощения обращения к нему из кода.</span></div><div style="text-align: left;"><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;"><br /></span></div><div style="text-align: left;"><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;">2) Пишем немного кода. Для&nbsp;</span><span class="Apple-style-span" style="font-family: Verdana, sans-serif; font-size: x-small;">подписывания сообщения я использовал&nbsp;<a href="http://www.bouncycastle.org/java.html" target="_blank">BouncyCastle</a></span></div><div style="text-align: left;"><div class="java" cols="45" name="code" rows="10"><br /><br /><br />public class Encoder {<br /><span class="Apple-tab-span" style="white-space: pre;"> </span><br /><span class="Apple-tab-span" style="white-space: pre;"> </span><br /><span class="Apple-tab-span" style="white-space: pre;"> </span>// Считываем хранилище<br /><span class="Apple-tab-span" style="white-space: pre;"> </span>public KeyStore getKeystore(String password) throws GeneralSecurityException, IOException {<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> &nbsp;Security.addProvider(new BouncyCastleProvider());<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> &nbsp;KeyStore keystore = KeyStore.getInstance(&#8220;PKCS12&#8221;);<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> &nbsp;InputStream input = new FileInputStream(&#8220;path&#92;packet.p12&#8221;);<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> &nbsp;keystore.load(input, password.toCharArray());<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> &nbsp;input.close();<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> &nbsp;return keystore;<br /><span class="Apple-tab-span" style="white-space: pre;"> </span> }<br /><br /><span class="Apple-tab-span" style="white-space: pre;"> </span>public String encodeMessage(String xml, String pass)<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>throws OperatorCreationException, CMSException, IOException, GeneralSecurityException {<br /><span class="Apple-tab-span" style="white-space: pre;">  </span><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>KeyStore ks = getKeystore(pass);<br /><span class="Apple-tab-span" style="white-space: pre;">   </span><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Получаем из хранилища сертификат<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>Certificate certificate = ks.getCertificate(&#8220;certrust&#8221;);<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>X509Certificate certificateX509 = (X509Certificate) certificate;<br /><span class="Apple-tab-span" style="white-space: pre;">  </span><br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Добавляем его в список сертификатов<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>List&lt;X509Certificate&gt; certList = new ArrayList&lt;X509Certificate&gt;();<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>certList.add(certificateX509);<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Создаем хранилище сертификатов<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>Store certs = new JcaCertStore(certList);<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Получаем приватный ключ<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>PrivateKey privateKey = (PrivateKey) ks.getKey(&#8220;certrust&#8221;, pass.toCharArray());<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Включаем в подписываемый объект наш XML<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>CMSTypedData msg = new CMSProcessableByteArray(xml.getBytes(&#8220;UTF-8&#8221;));<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Создаем генератор<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>CMSSignedDataGenerator gen = new CMSSignedDataGenerator();<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Конфигурим подписанта<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>ContentSigner sha1Signer = new JcaContentSignerBuilder(<br /><span class="Apple-tab-span" style="white-space: pre;">     </span>&#8220;SHA1withRSA&#8221;).setProvider(&#8220;BC&#8221;).build(privateKey);<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(<br /><span class="Apple-tab-span" style="white-space: pre;">     </span>new JcaDigestCalculatorProviderBuilder().setProvider(&#8220;BC&#8221;)<br /><span class="Apple-tab-span" style="white-space: pre;">       </span>.build()).build(sha1Signer, certificateX509));<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>// Добавляем хранилище сертификатов<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>gen.addCertificates(certs);<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>//<br /><span class="Apple-tab-span" style="white-space: pre;">   </span>CMSSignedData signedData = gen.generate(msg, true);<br /><br /><span class="Apple-tab-span" style="white-space: pre;">   </span>return new String(Base64.encode(signedData.getEncoded()));<br /><span class="Apple-tab-span" style="white-space: pre;"> </span><br /><span class="Apple-tab-span" style="white-space: pre;"> </span>}<br /><br />}<br /></div></div><div style="text-align: left;"><br /><br />На выходе получаем строку в base64, подписанную нашим сертификатом. Для упрощения примера XML &nbsp;имеет тип String.<br /><br /><br /></div><div style="text-align: left;"><b><br /></b></div><div style="text-align: left;"><br /></div></div></div>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2011/12/24/weblogic/">Weblogic перенос конфигурации</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-24T10:29:00+04:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div class='post'>
-<div dir="ltr" style="text-align: left;" trbidi="on"><div style="text-align: left;"><div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-TTiEBYQWauA/TvWAguLMKoI/AAAAAAAAAI4/HDaklYktfFQ/s1600/preferences_system.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-TTiEBYQWauA/TvWAguLMKoI/AAAAAAAAAI4/HDaklYktfFQ/s1600/preferences_system.png" /></a></div>Поддержка актуального состояния для стендов, целая головная боль, в особенности если их количество достигает десятков. Вариантов решения может быть много, начиная от клонирования самих операционных систем, заканчивая прогонкой всего цикла развертывания для каждого отдельно взятого инстанса Weblogic.</div><div style="text-align: left;"><br /></div><div style="text-align: left;">У Weblogic механизм, &nbsp;напоминающий макросы. Он позволяет &nbsp;записать всю конфигурацию инстанса и в дальнейшем прогонять уже готовый&nbsp;алгоритм&nbsp;на&nbsp;свеже-установленный серверах.</div><div style="text-align: left;"><br /></div><div style="text-align: left;">Итак, как же это делается?</div><div style="text-align: left;"><br /></div><a name='more'></a><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">Для примера я бы хотел создать один jdbc конект и JMS очередь.</div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">1) Заходим в админ-консоль</div><div style="text-align: left;">2) Нажимаем Record</div><div style="text-align: left;"><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-dvmL34J3NI0/TvVcL9druZI/AAAAAAAAAGo/biKIwkBzUsI/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_025.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="73" src="http://2.bp.blogspot.com/-dvmL34J3NI0/TvVcL9druZI/AAAAAAAAAGo/biKIwkBzUsI/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_025.png" width="640" /></a></div><div style="text-align: left;"><br /></div><div style="text-align: left;">3) Создаем jdbc коннект</div><div style="text-align: left;"></div><div class="separator" style="clear: both; text-align: center;"></div><div class="separator" style="clear: both; text-align: center;"></div><ol style="text-align: left;"><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://4.bp.blogspot.com/-WkxBqpO6wVE/TvVjN8JSX7I/AAAAAAAAAHA/jM_ZuloA7nw/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_027.png" imageanchor="1" style="margin-left: auto; margin-right: auto; text-align: center;"><img border="0" height="347" src="http://4.bp.blogspot.com/-WkxBqpO6wVE/TvVjN8JSX7I/AAAAAAAAAHA/jM_ZuloA7nw/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_027.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;"><span class="Apple-style-span" style="font-size: small;">Называем базу</span></td></tr></tbody></table></ol><div><br /></div><div class="separator" style="clear: both; text-align: center;"></div><table cellpadding="0" cellspacing="0" class="tr-caption-container" style="clear: left; margin-bottom: 1em; margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://2.bp.blogspot.com/-njKGhvYd4AQ/TvVkq2GM1qI/AAAAAAAAAHk/0drgZlg67kw/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_028.png" imageanchor="1" style="display: inline !important; margin-left: auto; margin-right: auto;"><img border="0" height="340" src="http://2.bp.blogspot.com/-njKGhvYd4AQ/TvVkq2GM1qI/AAAAAAAAAHk/0drgZlg67kw/s400/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_028.png" width="400" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Настраиваем ее</td></tr></tbody></table><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://3.bp.blogspot.com/-BVl_a5XQMwc/TvVl-d2ps4I/AAAAAAAAAHw/4Rl79giUmqQ/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_029.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="192" src="http://3.bp.blogspot.com/-BVl_a5XQMwc/TvVl-d2ps4I/AAAAAAAAAHw/4Rl79giUmqQ/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_029.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Добавляем таргет<br /><br /></td></tr></tbody></table><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://2.bp.blogspot.com/-1w-v3PLhVL4/TvVm8RxzxKI/AAAAAAAAAII/SMZZe8c-Ddg/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_031.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="11" src="http://2.bp.blogspot.com/-1w-v3PLhVL4/TvVm8RxzxKI/AAAAAAAAAII/SMZZe8c-Ddg/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_031.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Результат</td></tr></tbody></table><br /><div><br /><div style="text-align: left;"><br /></div><div style="text-align: left;">4) Создаем Jms очередь</div><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://1.bp.blogspot.com/-tQ3Sa3db8fA/TvVn9fC47DI/AAAAAAAAAIU/XYx5V6Gkwtg/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_032.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="16" src="http://1.bp.blogspot.com/-tQ3Sa3db8fA/TvVn9fC47DI/AAAAAAAAAIU/XYx5V6Gkwtg/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_032.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Новя jms Очередь</td></tr></tbody></table><div style="text-align: left;"><br /></div><div style="text-align: left;">5) Снова нажимаем &#8220;Record&#8221; &nbsp;и завершаем запись, получим url скрипта.</div><div style="text-align: left;"><br /></div><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://3.bp.blogspot.com/-CfboIE8YquE/TvVobkZkA8I/AAAAAAAAAIg/Kvk8rThvg04/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_033.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="31" src="http://3.bp.blogspot.com/-CfboIE8YquE/TvVobkZkA8I/AAAAAAAAAIg/Kvk8rThvg04/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_033.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Завершение записи скрипта</td></tr></tbody></table><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">В итоге у меня получились три файл описывающий создание данных сущностей.<br />-&nbsp;Script1324702605826.py - сам скрипт<br /><br />и два файла для дешефрации паролей<br />-&nbsp;Script1324702605826Config<br />-&nbsp;Script1324702605826Secret</div><div style="text-align: left;"><br /></div><div style="text-align: left;">Теперь необходимо прогнать полученный скрипт на Weblogic. Для этого надо скопировать полученные файлы в директорию домена нового weblogic.<br /><br />И выполнить<br /><br />java weblogic.WLST Script1324702605826.py<br /><br /><br /><br /><br /><div><br /></div></div><div style="text-align: left;"><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><br /></td></tr></tbody></table></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div></div></div></div>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2011/04/18/island-hd-ipad/">Проходим Island HD для iPad</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-18T14:56:00+04:00" pubdate data-updated="true">Apr 18<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div class='post'>
-<div dir="ltr" style="text-align: left;" trbidi="on"><div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/-JVv84r8Kgo0/TarKgnxRxgI/AAAAAAAAACk/oyCMvrClIhA/s1600/island.jpg" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" height="150" src="http://1.bp.blogspot.com/-JVv84r8Kgo0/TarKgnxRxgI/AAAAAAAAACk/oyCMvrClIhA/s200/island.jpg" width="200" /></a></div>Итак игра полное тамагочи и требует что бы ты постоянно что-то где-то кликал. С возрастанием уровня кликать приходится реже, но все равно приходится тратить кучу времени на то,&nbsp; что бы дождаться строительства, починки или сноса здания.<br /><br />Так как игра живет по времени Ipad&nbsp; мы его будем немного ускорять. Как сделать это автоматически я не знаю,&nbsp; так что придется много кликать, но зато не придется тупо глазеть на прогресс своего строительства и можно уже за часик сделать 10 уровень, ну а за 3 закончить все это строительство наконец и удалить игрушку.<br /><br /><a name='more'></a><br /><br />Итак<br /><br />1. Двойным кликом по кнопке Home открываем запущенные приложения и удаляем Island.<br />2. Далее Настройки-Основные-Дата и время. Снимаем&nbsp; автоматически и выставляем будущее время например +1 день.<br />3. Далее запускаем игру и вуаля у нас уже все построено и везде зеленые баксы.<br /><br />Повторяем пункты 1-3 пока не захочется удалить игрушку :)<br /><br /><b>Важно</b> <br />- не забывать выгружать игрушку из памяти, а то она просечет ваш хитрый ход&nbsp; и вы не получите Profit.<br />- если вы решите вернуться к цестной игре&nbsp; у вас может не получится, так как игра будет жить в будущем времени.<br /><br /><br /><br /></div></div>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2011/04/17/blog-post/">Земля Ван Димена</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-17T14:02:00+04:00" pubdate data-updated="true">Apr 17<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div class='post'>
-<div dir="ltr" style="text-align: left;" trbidi="on"><div class="separator" style="clear: both; text-align: center;"><a href="http://4.bp.blogspot.com/-T-ctXqlDRr8/Taq6mUDCxJI/AAAAAAAAACg/M5oCuNdGddY/s1600/vaddem.jpg" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" height="200" src="http://4.bp.blogspot.com/-T-ctXqlDRr8/Taq6mUDCxJI/AAAAAAAAACg/M5oCuNdGddY/s200/vaddem.jpg" width="135" /></a></div>&nbsp;Редко получается найти кино которое действительно нравится. Данный фильм как одно из иключений.<br /><br />Земля Ван Димена -медитативная картина, наполненная дикой красотой природы Тасманского края, времен первых колонистов.<br /><br />Грязные как физически, так и душевно гниющие люди с мешками человеческого мяса, бредут к свободе по красивейшим пейзажам Австралии.&nbsp; Но пейзажи красивы лишь тогда когда смотришь на них сквозь призму монитора, а для&nbsp; юзников&nbsp; эта красота лишь юдоль скорби, пройти которую становится сложнее с каждым шагом.<br /><br />Всячески советую для просмотра, так как это действительно красивая картина, предающая атмосферу этого края и времени. Чего стоят рассказы «Плейбоя» о том как лучше держать женщину. Или крупные планы лица английского солдата вовремя обеда. Глядя на его обед, на ум приходит Серджио Леоне с его гипнотизирующими кадрами в фильме «Хороший, плохой злой».<br /><br />Атмосферу ничтожности человека и тщетности его попыток выжить в диких условиях подчеркивает музыкальный ряд картины. Сколь несоизмеримо величие природы, столь и мелок в ней человек, тащущей за собой ворох грехов.<br /><br />Дорога к свободе – оказывается своего рода чистилищем для бежавших заключенных, и как и полагается не всем дано дойти до конца.﻿</div></div>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/blog/2011/04/17/ip/">Прячем свой сервачок за буржуйскими IP</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-17T13:44:00+04:00" pubdate data-updated="true">Apr 17<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://4.bp.blogspot.com/-4xgqSW8SxQE/Taq2O8LoACI/AAAAAAAAACM/JXJ5_Btz-Pc/s1600/a981acf3ab96cd68284526cb28f.jpg" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"></p>
-
-<p><img border="0" height="150" src="http://4.bp.blogspot.com/-4xgqSW8SxQE/Taq2O8LoACI/AAAAAAAAACM/JXJ5_Btz-Pc/s200/a981acf3ab96cd68284526cb28f.jpg" width="200" /></a></p>
-
-<p>Так получилось что все проекты я могу хостить сам на себе причем с аптаймом в среднем равным, а порой и выше чем у других хостеров. Да и еще новый интернет позволяет раздавать контент с надлежащей скоростью. Все бы хорошо, да вот только не охота светить свой честно выделенный провайдером ip.</p>
-
-<p>Поэтому решено было сделать финт ушами, будем делать простой форвард портов с иноземного провайдера, для этого нам понадобиться:</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/blog/2011/04/17/ip/">Read on &rarr;</a>
-    </footer>
   
 
 
@@ -313,22 +116,6 @@
     
       <li class="post">
         <a href="/blog/blog/2012/10/29/test-post/">Test post</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2011/12/28/how-to-java-pkcs12/">How-to Java PKCS#12</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2011/12/24/weblogic/">Weblogic перенос конфигурации</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2011/04/18/island-hd-ipad/">Проходим Island HD для iPad</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/blog/2011/04/17/blog-post/">Земля Ван Димена</a>
       </li>
     
   </ul>
