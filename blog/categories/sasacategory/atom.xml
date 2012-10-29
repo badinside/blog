@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[BadInside]]></title>
-  <link href="http://badinside.github.com/blog/atom.xml" rel="self"/>
+  <title><![CDATA[Category: sasacategory | BadInside]]></title>
+  <link href="http://badinside.github.com/blog/blog/categories/sasacategory/atom.xml" rel="self"/>
   <link href="http://badinside.github.com/blog/"/>
   <updated>2012-10-29T18:43:42+04:00</updated>
   <id>http://badinside.github.com/blog/</id>
