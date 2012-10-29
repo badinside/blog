@@ -4,7 +4,7 @@
   <title><![CDATA[BadInside]]></title>
   <link href="http://badinside.github.com/blog/atom.xml" rel="self"/>
   <link href="http://badinside.github.com/blog/"/>
-  <updated>2012-10-29T19:37:18+04:00</updated>
+  <updated>2012-10-29T19:43:51+04:00</updated>
   <id>http://badinside.github.com/blog/</id>
   <author>
     <name><![CDATA[BadInside]]></name>
@@ -12,6 +12,17 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Test post]]></title>
+    <link href="http://badinside.github.com/blog/blog/2012/10/29/test-post/"/>
+    <updated>2012-10-29T19:43:00+04:00</updated>
+    <id>http://badinside.github.com/blog/blog/2012/10/29/test-post</id>
+    <content type="html"><![CDATA[<h2>Руддщ</h2>
+
+<h1>ророро</h1>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How-to Java PKCS#12]]></title>
