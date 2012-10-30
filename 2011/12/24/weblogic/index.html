@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Weblogic перенос конфигурации - BadInside</title>
+  <meta name="author" content="BadInside">
+
+  
+  <meta name="description" content="Поддержка актуального состояния для стендов, целая головная боль, в особенности если их количество достигает десятков. Вариантов решения может быть &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://badinside.github.com/blog/blog/2011/12/24/weblogic/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/blog/atom.xml" rel="alternate" title="BadInside" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">BadInside</a></h1>
+  
+    <h2>Intergation inside</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/blog/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:badinside.github.com/blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Weblogic перенос конфигурации</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-24T10:29:00+04:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><div class='post'>
+<div dir="ltr" style="text-align: left;" trbidi="on"><div style="text-align: left;"><div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-TTiEBYQWauA/TvWAguLMKoI/AAAAAAAAAI4/HDaklYktfFQ/s1600/preferences_system.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-TTiEBYQWauA/TvWAguLMKoI/AAAAAAAAAI4/HDaklYktfFQ/s1600/preferences_system.png" /></a></div>Поддержка актуального состояния для стендов, целая головная боль, в особенности если их количество достигает десятков. Вариантов решения может быть много, начиная от клонирования самих операционных систем, заканчивая прогонкой всего цикла развертывания для каждого отдельно взятого инстанса Weblogic.</div><div style="text-align: left;"><br /></div><div style="text-align: left;">У Weblogic механизм, &nbsp;напоминающий макросы. Он позволяет &nbsp;записать всю конфигурацию инстанса и в дальнейшем прогонять уже готовый&nbsp;алгоритм&nbsp;на&nbsp;свеже-установленный серверах.</div><div style="text-align: left;"><br /></div><div style="text-align: left;">Итак, как же это делается?</div><div style="text-align: left;"><br /></div><a name='more'></a><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">Для примера я бы хотел создать один jdbc конект и JMS очередь.</div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">1) Заходим в админ-консоль</div><div style="text-align: left;">2) Нажимаем Record</div><div style="text-align: left;"><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-dvmL34J3NI0/TvVcL9druZI/AAAAAAAAAGo/biKIwkBzUsI/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_025.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="73" src="http://2.bp.blogspot.com/-dvmL34J3NI0/TvVcL9druZI/AAAAAAAAAGo/biKIwkBzUsI/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_025.png" width="640" /></a></div><div style="text-align: left;"><br /></div><div style="text-align: left;">3) Создаем jdbc коннект</div><div style="text-align: left;"></div><div class="separator" style="clear: both; text-align: center;"></div><div class="separator" style="clear: both; text-align: center;"></div><ol style="text-align: left;"><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://4.bp.blogspot.com/-WkxBqpO6wVE/TvVjN8JSX7I/AAAAAAAAAHA/jM_ZuloA7nw/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_027.png" imageanchor="1" style="margin-left: auto; margin-right: auto; text-align: center;"><img border="0" height="347" src="http://4.bp.blogspot.com/-WkxBqpO6wVE/TvVjN8JSX7I/AAAAAAAAAHA/jM_ZuloA7nw/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_027.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;"><span class="Apple-style-span" style="font-size: small;">Называем базу</span></td></tr></tbody></table></ol><div><br /></div><div class="separator" style="clear: both; text-align: center;"></div><table cellpadding="0" cellspacing="0" class="tr-caption-container" style="clear: left; margin-bottom: 1em; margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://2.bp.blogspot.com/-njKGhvYd4AQ/TvVkq2GM1qI/AAAAAAAAAHk/0drgZlg67kw/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_028.png" imageanchor="1" style="display: inline !important; margin-left: auto; margin-right: auto;"><img border="0" height="340" src="http://2.bp.blogspot.com/-njKGhvYd4AQ/TvVkq2GM1qI/AAAAAAAAAHk/0drgZlg67kw/s400/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_028.png" width="400" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Настраиваем ее</td></tr></tbody></table><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://3.bp.blogspot.com/-BVl_a5XQMwc/TvVl-d2ps4I/AAAAAAAAAHw/4Rl79giUmqQ/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_029.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="192" src="http://3.bp.blogspot.com/-BVl_a5XQMwc/TvVl-d2ps4I/AAAAAAAAAHw/4Rl79giUmqQ/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_029.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Добавляем таргет<br /><br /></td></tr></tbody></table><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://2.bp.blogspot.com/-1w-v3PLhVL4/TvVm8RxzxKI/AAAAAAAAAII/SMZZe8c-Ddg/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_031.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="11" src="http://2.bp.blogspot.com/-1w-v3PLhVL4/TvVm8RxzxKI/AAAAAAAAAII/SMZZe8c-Ddg/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_031.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Результат</td></tr></tbody></table><br /><div><br /><div style="text-align: left;"><br /></div><div style="text-align: left;">4) Создаем Jms очередь</div><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://1.bp.blogspot.com/-tQ3Sa3db8fA/TvVn9fC47DI/AAAAAAAAAIU/XYx5V6Gkwtg/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_032.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="16" src="http://1.bp.blogspot.com/-tQ3Sa3db8fA/TvVn9fC47DI/AAAAAAAAAIU/XYx5V6Gkwtg/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_032.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Новя jms Очередь</td></tr></tbody></table><div style="text-align: left;"><br /></div><div style="text-align: left;">5) Снова нажимаем &#8220;Record&#8221; &nbsp;и завершаем запись, получим url скрипта.</div><div style="text-align: left;"><br /></div><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><a href="http://3.bp.blogspot.com/-CfboIE8YquE/TvVobkZkA8I/AAAAAAAAAIg/Kvk8rThvg04/s1600/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_033.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" height="31" src="http://3.bp.blogspot.com/-CfboIE8YquE/TvVobkZkA8I/AAAAAAAAAIg/Kvk8rThvg04/s640/%25D0%2592%25D1%258B%25D0%25B4%25D0%25B5%25D0%25BB%25D0%25B5%25D0%25BD%25D0%25B8%25D0%25B5_033.png" width="640" /></a></td></tr><tr><td class="tr-caption" style="text-align: center;">Завершение записи скрипта</td></tr></tbody></table><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">В итоге у меня получились три файл описывающий создание данных сущностей.<br />-&nbsp;Script1324702605826.py - сам скрипт<br /><br />и два файла для дешефрации паролей<br />-&nbsp;Script1324702605826Config<br />-&nbsp;Script1324702605826Secret</div><div style="text-align: left;"><br /></div><div style="text-align: left;">Теперь необходимо прогнать полученный скрипт на Weblogic. Для этого надо скопировать полученные файлы в директорию домена нового weblogic.<br /><br />И выполнить<br /><br />java weblogic.WLST Script1324702605826.py<br /><br /><br /><br /><br /><div><br /></div></div><div style="text-align: left;"><table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody><tr><td style="text-align: center;"><br /></td></tr></tbody></table></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div><div style="text-align: left;"><br /></div></div></div></div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BadInside</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-24T10:29:00+04:00" pubdate data-updated="true">Dec 24<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/weblogic/'>weblogic</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://badinside.github.com/blog/blog/2011/12/24/weblogic/" data-via="_badinside_" data-counturl="http://badinside.github.com/blog/blog/2011/12/24/weblogic/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/04/18/island-hd-ipad/" title="Previous Post: Проходим Island HD для iPad">&laquo; Проходим Island HD для iPad</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/12/28/how-to-java-pkcs12/" title="Next Post: How-to Java PKCS#12">How-to Java PKCS#12 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/12/28/how-to-java-pkcs12/">How-to Java PKCS#12</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/12/24/weblogic/">Weblogic перенос конфигурации</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/04/18/island-hd-ipad/">Проходим Island HD для iPad</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/04/17/blog-post/">Земля Ван Димена</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/04/17/ip/">Прячем свой сервачок за буржуйскими IP</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("_badinside_", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/_badinside_" class="twitter-follow-button" data-show-count="false">Follow @_badinside_</a>
+  
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - BadInside -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
